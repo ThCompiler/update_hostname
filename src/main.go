@@ -1,52 +1,17 @@
 package main
 
 import (
-	"encoding/json"
+	"github.com/ThCompiler/go.beget.api/pkg/beget/core"
 	"io"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 	"update_hostname/config"
+	"update_hostname/internal/logger"
+	"update_hostname/internal/updator"
 )
-
-type IP struct {
-	Query string
-}
-
-func getIp() (string, error) {
-	req, err := http.Get("http://ip-api.com/json/")
-	if err != nil {
-		return "", err
-	}
-
-	defer func() { _ = req.Body.Close() }()
-
-	body, err := io.ReadAll(req.Body)
-	if err != nil {
-		return "", err
-	}
-
-	var ip IP
-	if err := json.Unmarshal(body, &ip); err != nil {
-		return "", err
-	}
-
-	return ip.Query, nil
-}
-
-func UpdateIP(cfg *config.Config) {
-	_, err := getIp()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	client :=
-
-}
 
 func main() {
 	cfg, err := config.NewConfig()
@@ -54,18 +19,71 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ticker := time.NewTicker(2 * time.Hour)
+	l, deferFunc := PrepareLogger(cfg.LoggerInfo)
+	defer func() {
+		deferFunc()
+		_ = l.Sync()
+	}()
 
+	updater := updator.NewUpdater(
+		core.Client{
+			Login:    cfg.Login,
+			Password: cfg.Password,
+		},
+		l,
+		cfg.Domain,
+	)
+
+	loop(updater, l, cfg.UpdateHours)
+}
+
+func loop(updater *updator.Updater, l logger.Interface, updateHour int64) {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
+	ticker := time.NewTicker(time.Duration(updateHour) * time.Hour)
+loop:
 	for {
 		select {
 		case s := <-interrupt:
-			log.Print(s.String())
-			break
+			l.Info(s.String())
+			break loop
 		case <-ticker.C:
-			UpdateIP(cfg)
+			updater.Update()
 		}
 	}
+}
+
+func ConvertConfigLoggerParam(cfg config.LoggerInfo) logger.Params {
+	return logger.Params{
+		AppName:                  cfg.AppName,
+		LogDir:                   cfg.Directory,
+		Level:                    cfg.Level,
+		UseStdAndFile:            cfg.UseStdAndFile,
+		AddLowPriorityLevelToCmd: cfg.AllowShowLowLevel,
+	}
+}
+
+func PrepareLogger(cfg config.LoggerInfo) (l *logger.Logger, deferFunc func()) {
+	var logOut io.Writer
+
+	if cfg.Directory != "" {
+		file, err := logger.OpenLogDir(cfg.Directory)
+		if err != nil {
+			log.Fatalf("create logger error: %s", err)
+		}
+
+		deferFunc = func() {
+			err = file.Close()
+			log.Fatalf("close log file error: %s", err)
+		}
+
+		logOut = file
+	} else {
+		logOut = os.Stderr
+	}
+
+	l = logger.New(ConvertConfigLoggerParam(cfg), logOut)
+
+	return l, deferFunc
 }
