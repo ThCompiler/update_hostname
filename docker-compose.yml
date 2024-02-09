@@ -1,0 +1,11 @@
+services:
+  main:
+    image: main
+    networks:
+      - default
+    volumes:
+      - ./logs:/app/logs
+      - ${CONFIG_DIR}:/app/configs
+networks:
+  default:
+    driver: bridge
