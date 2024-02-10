@@ -1,7 +1,7 @@
 LOG_DIR=./logs
 
 build:
-	go build -o server.out -v ./src/main
+	go build -o server.out -v ./src
 
 build-docker:
 	docker build --no-cache --network host -f ./Dockerfile . --tag main
