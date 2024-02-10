@@ -42,6 +42,7 @@ func loop(updater *updator.Updater, l logger.Interface, updateHour int64) {
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
 	ticker := time.NewTicker(time.Duration(updateHour) * time.Hour)
+	updater.Update()
 loop:
 	for {
 		select {
