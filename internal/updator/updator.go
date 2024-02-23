@@ -1,12 +1,10 @@
 package updator
 
 import (
-	"github.com/ThCompiler/go.beget.api/pkg/beget/api/dns"
-	"github.com/ThCompiler/go.beget.api/pkg/beget/api/dns/build"
-	"github.com/ThCompiler/go.beget.api/pkg/beget/api/dns/result"
-	generalresult "github.com/ThCompiler/go.beget.api/pkg/beget/api/result"
-	"github.com/ThCompiler/go.beget.api/pkg/beget/core"
-	"github.com/ThCompiler/go.beget.api/pkg/beget/core/request"
+	"github.com/ThCompiler/go.beget.api/api/dns"
+	"github.com/ThCompiler/go.beget.api/api/dns/build"
+	"github.com/ThCompiler/go.beget.api/api/result"
+	"github.com/ThCompiler/go.beget.api/core"
 	"github.com/pkg/errors"
 	"update_hostname/internal/logger"
 )
@@ -16,7 +14,7 @@ const (
 )
 
 type Updater struct {
-	getRequest *request.BegetRequest[result.GetData]
+	getRequest *core.BegetRequest[result.GetData]
 	client     core.Client
 	log        logger.Interface
 	domain     string
@@ -58,14 +56,12 @@ func (updater *Updater) Update() {
 }
 
 func (updater *Updater) setDomainIp(ip string) {
-	req, err := core.PrepareRequest[generalresult.BoolResult](
+	req, err := core.PrepareRequest[result.BoolResult](
 		updater.client,
 		dns.CallChangeRecords(updater.domain,
-			dns.SetRecords(
-				build.NewBasicRecordsCreator().AddARecords(
-					build.NewARecordCreator().AddRecord(basicPriority, ip),
-				).Create(),
-			),
+			build.NewBasicRecordsCreator().AddARecords(
+				build.NewARecords().AddRecord(basicPriority, ip),
+			).Create(),
 		),
 	)
 	if err != nil {
@@ -79,15 +75,15 @@ func (updater *Updater) setDomainIp(ip string) {
 		return
 	}
 
-	answer, err := resp.GetResult()
+	answer, err := resp.Get()
 	if err != nil {
-		updater.log.Error(errors.Wrapf(resp.MustGetError(), "error of request of setting domain %s ip %s", updater.domain, ip))
+		updater.log.Error(errors.Wrapf(err, "error of request of setting domain %s ip %s", updater.domain, ip))
 		return
 	}
 
-	result, err := answer.GetResult()
+	result, err := answer.Get()
 	if err != nil {
-		updater.log.Error(errors.Wrapf(answer.MustGetError(), "error of method of setting domain %s ip %s", updater.domain, ip))
+		updater.log.Error(errors.Wrapf(err, "error of method of setting domain %s ip %s", updater.domain, ip))
 		return
 	}
 
@@ -106,15 +102,15 @@ func (updater *Updater) getDomainInfo() *result.GetData {
 		return nil
 	}
 
-	answer, err := resp.GetResult()
+	answer, err := resp.Get()
 	if err != nil {
-		updater.log.Error(errors.Wrapf(resp.MustGetError(), "response was with error for %s", updater.domain))
+		updater.log.Error(errors.Wrapf(err, "response was with error for %s", updater.domain))
 		return nil
 	}
 
-	data, err := answer.GetResult()
+	data, err := answer.Get()
 	if err != nil {
-		updater.log.Error(errors.Wrapf(answer.MustGetError(), "method return error for %s", updater.domain))
+		updater.log.Error(errors.Wrapf(err, "method return error for %s", updater.domain))
 		return nil
 	}
 

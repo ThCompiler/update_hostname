@@ -1,0 +1,3 @@
+{"level":"info","ts":1708729864.5348601,"msg":"gotten public ip 195.19.34.5","app_name":"update-ip"}
+{"level":"info","ts":1708729865.8005404,"msg":"ip of domain tmp.thecompiler.pw successfully changed to ip 195.19.34.5","app_name":"update-ip"}
+{"level":"info","ts":1708729889.6897297,"msg":"interrupt","app_name":"update-ip"}

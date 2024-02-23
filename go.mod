@@ -3,7 +3,7 @@ module update_hostname
 go 1.21
 
 require (
-	github.com/ThCompiler/go.beget.api v0.0.1
+	github.com/ThCompiler/go.beget.api v0.0.2
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.26.0

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ThCompiler/go.beget.api/pkg/beget/core"
+	"github.com/ThCompiler/go.beget.api/core"
 	"io"
 	"log"
 	"os"

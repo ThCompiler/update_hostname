@@ -2,6 +2,8 @@ github.com/BurntSushi/toml v1.2.1 h1:9F2/+DoOYIOksmaJFPw1tGFy1eDnIJXg+UHjuD8lTak
 github.com/BurntSushi/toml v1.2.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
 github.com/ThCompiler/go.beget.api v0.0.1 h1:CVqMD5FSQIyu48M06cIppeQdO1+Mu2Tx/j6l98vSHvk=
 github.com/ThCompiler/go.beget.api v0.0.1/go.mod h1:Nr4Xm7zUTatZazFTQ2K9KcnTJjtgkGq8ow3YC/UYtuM=
+github.com/ThCompiler/go.beget.api v0.0.2 h1:6U1K2FBVRn345Qtr5lO/W0CjunV/s5PWOepd8rudOkA=
+github.com/ThCompiler/go.beget.api v0.0.2/go.mod h1:FAojeTOx8anbVDBUmV66XQTuMNG1ch0l+Fjpfni7wHg=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/ilyakaznacheev/cleanenv v1.5.0 h1:0VNZXggJE2OYdXE87bfSSwGxeiGt9moSR2lOrsHHvr4=
